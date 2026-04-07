@@ -13,9 +13,11 @@ using a single artisan command.
 
 ### Clone the package
 
-    mkdir packages
-    cd packages
-    git clone https://github.com/Rabbihasan610/laravel-services.git
+    Download the project
+    GitHub এ যাও:
+    https://github.com/Rabbihasan610/laravel-services
+    Code → Download ZIP ক্লিক করো
+    zip extract করে project এর ভিতরে রাখো:
 
 ### Add to composer.json
 
