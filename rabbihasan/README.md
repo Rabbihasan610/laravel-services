@@ -24,7 +24,7 @@ using a single artisan command.
     "repositories": [
         {
             "type": "path",
-            "url": "packages/laravel-services/rabbihasan/laravel-service"
+            "url": "packages//rabbihasan/laravel-service"
         }
     ]
 
