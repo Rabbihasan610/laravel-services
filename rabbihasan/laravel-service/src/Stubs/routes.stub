@@ -28,6 +28,7 @@ Route::middleware('admin')->group(function () {
             Route::post('/update/{service_id}/{id}', [{{namespace}}FormController::class, 'update'])->name('update');
             Route::post('/status/{service_id}/{id}', [{{namespace}}FormController::class, 'status'])->name('status');
             Route::post('/delete/{service_id}/{id}', [{{namespace}}FormController::class, 'destroy'])->name('delete');
+            Route::post('/reorder', {{namespace}}FormController::class, 'reorder'])->name('reorder');
         });
     });
 });

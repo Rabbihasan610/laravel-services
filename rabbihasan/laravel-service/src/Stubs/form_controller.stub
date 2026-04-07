@@ -165,4 +165,14 @@ class {{class}} extends Controller
         $notify[] = ['error', $this->notify . ' status updated failed'];
         return redirect()->route($this->route . '.index', $service_id)->with($notify);
     }
+
+    public function reorder(Request $request)
+    {
+        foreach ($request->order as $item) {
+            $this->model::where('id', $item['id'])
+                ->update(['position' => $item['position']]);
+        }
+
+        return response()->json(['success' => true]);
+    }
 }

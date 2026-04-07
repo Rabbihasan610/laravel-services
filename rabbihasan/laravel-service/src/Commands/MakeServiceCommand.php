@@ -202,34 +202,38 @@ class MakeServiceCommand extends Command
     }
     protected function makeViews($slug)
     {
-        if (!$slug) {
-            $this->error("Slug is required");
+        if (empty($slug)) {
+            $this->error('Slug is required');
             return false;
         }
-    
+
         $viewPath = resource_path("views/admin/{$slug}");
-        $zipPath = __DIR__ . "/../stubs/views.zip";
-    
+        $zipPath = __DIR__ . '/../stubs/views.zip';
+
+        if (!$this->files->exists($zipPath)) {
+            $this->error("Zip file not found: {$zipPath}");
+            return false;
+        }
+
         if ($this->files->exists($viewPath)) {
+            $this->info("View path already exists: {$viewPath}");
             return false;
         }
-    
-        $this->files->makeDirectory($viewPath, 0755, true);
-    
-        // Use system unzip command
-        $command = "unzip -q " . escapeshellarg($zipPath) . " -d " . escapeshellarg($viewPath);
-        $output = null;
-        $result = null;
-        
-        exec($command, $output, $result);
-        
-        if ($result === 0) {
-            $this->info("Views successfully extracted");
+
+        $this->files->makeDirectory($viewPath, 0755, true, true);
+
+        $zip = new \ZipArchive();
+
+        if ($zip->open($zipPath) === true) {
+            $zip->extractTo($viewPath);
+            $zip->close();
+
+            $this->info("Views successfully extracted to: {$viewPath}");
             return true;
-        } else {
-            $this->error("Failed to extract zip file");
-            return false;
         }
+
+        $this->error("Failed to open zip file: {$zipPath}");
+        return false;
     }
 
     protected function appendRoutes($name, $plural)

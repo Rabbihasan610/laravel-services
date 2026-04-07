@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Admin\FinancialInvestments;
+namespace App\Http\Controllers\Admin\{{namespace}};
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\FinancialInvestment;
+use App\Models\{{model}}Category;
 
-class FinancialInvestmentController extends Controller
+class {{class}}Category extends Controller
 {
 
-    public $model = FinancialInvestment::class;
+    public $model = {{model}}Category::class;
     public $searchable = ['title', 'title_ar'];
-    public $view = "admin.financial_investments";
-    public $route = "admin.financial_investments";
-    public $redirect = "admin.financial_investments";
-    public $notify = "Financial Investment";
-    public $file_path = "financial_investment";
-    
+    public $searchable = ['title', 'title_ar'];
+    public $view = "admin.{{views}}";
+    public $route = "admin.{{route}}";
+    public $redirect = "admin.{{route}}";
+    public $notify = "{{notify}}";
+    public $file_path = "{{file_path}}";
+
     public function index()
     {
         $datas = $this->model::searchable(request()->search, $this->searchable)->latest()->paginate(10);
@@ -26,7 +27,8 @@ class FinancialInvestmentController extends Controller
         $emptyMessage = __('No data found');
         $is_list = true;
         $is_form = true;
-        return view($this->view . '.index', compact('datas', 'route', 'title', 'file_path', 'emptyMessage', 'is_list', 'is_form'));
+        $pageTitle = "Category Lists";
+        return view($this->view . '.index', compact('datas', 'route', 'title', 'file_path', 'emptyMessage', 'is_list', 'is_form', 'pageTitle'));
     }
 
     public function create()
@@ -34,7 +36,9 @@ class FinancialInvestmentController extends Controller
         $route = $this->route;
         $title = $this->notify;
         $file_path = $this->file_path;
-        return view($this->view . '.create', compact('route', 'title', 'file_path'));
+        $categories = $this->model::active()->get();
+        $pageTitle = "Category Create";
+        return view($this->view . '.create', compact('route', 'title', 'file_path', 'categories', 'pageTitle'));
     }
 
     public function store(Request $request)
@@ -42,8 +46,7 @@ class FinancialInvestmentController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'title_ar' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
+            'parent_id' => 'nullable|numeric',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -51,8 +54,7 @@ class FinancialInvestmentController extends Controller
         $data = $this->model::create([
             'title' => $request->title,
             'title_ar' => $request->title_ar,
-            'description' => $request->description,
-            'description_ar' => $request->description_ar,
+            'parent_id' => $request->parent_id,
             'status' => $request->status,
         ]);
 
@@ -75,7 +77,9 @@ class FinancialInvestmentController extends Controller
         $route = $this->route;
         $title = $this->notify;
         $file_path = $this->file_path;
-        return view($this->view . '.edit', compact('data', 'route', 'title', 'file_path'));
+        $categories = $this->model::active()->get();
+        $pageTitle = "Edit Category";
+        return view($this->view . '.edit', compact('data', 'route', 'title', 'file_path', 'categories', 'pageTitle'));
     }
 
 
@@ -84,8 +88,7 @@ class FinancialInvestmentController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'title_ar' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
+            'parent_id' => 'nullable|numeric',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -94,8 +97,7 @@ class FinancialInvestmentController extends Controller
         $data->update([
             'title' => $request->title,
             'title_ar' => $request->title_ar,
-            'description' => $request->description,
-            'description_ar' => $request->description_ar,
+            'parent_id' => $request->parent_id,
             'status' => $request->status,
         ]);
 
@@ -120,7 +122,7 @@ class FinancialInvestmentController extends Controller
             fileDeleter($data->image, getFilePath($this->file_path));
         }
 
-        
+
         $data->delete();
 
         $notify[] = ['success', $this->notify . __('deleted successfully')];
